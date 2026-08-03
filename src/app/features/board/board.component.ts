@@ -88,6 +88,14 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
       overflow-y: hidden;
       flex: 1;
       align-items: flex-start;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: var(--space-3);
+        align-items: stretch;
+      }
     }
   `],
 })

@@ -79,6 +79,11 @@ import { User, TaskPriority } from '../../../../core/models/task.model';
       border-bottom: 1px solid var(--border-subtle);
       gap: var(--space-4);
       flex-wrap: wrap;
+
+      @media (max-width: 768px) {
+        padding: var(--space-3) var(--space-4);
+        gap: var(--space-3);
+      }
     }
 
     .board-header__left {
@@ -111,6 +116,10 @@ import { User, TaskPriority } from '../../../../core/models/task.model';
       position: relative;
       display: flex;
       align-items: center;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
     }
 
     .search-icon {
@@ -127,6 +136,10 @@ import { User, TaskPriority } from '../../../../core/models/task.model';
       padding-left: calc(var(--space-3) + 20px);
       font-size: var(--text-sm);
       height: 36px;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
     }
 
     .filter-select {

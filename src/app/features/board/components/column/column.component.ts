@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy, Component, EventEmitter, Input, Output,
 } from '@angular/core';
 import {
-  CdkDropList, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem,
+  CdkDropList, CdkDrag, CdkDragDrop, CdkDragPlaceholder, moveItemInArray, transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { Task, User, TaskStatus } from '../../../../core/models/task.model';
 import { TaskCardComponent } from '../task-card/task-card.component';
@@ -19,7 +19,7 @@ export interface ColumnViewModel {
   selector: 'app-column',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CdkDropList, CdkDrag, TaskCardComponent],
+  imports: [CdkDropList, CdkDrag, CdkDragPlaceholder, TaskCardComponent],
   template: `
     <div class="column">
       <!-- Column header -->
@@ -77,6 +77,13 @@ export interface ColumnViewModel {
       border-radius: var(--radius-lg);
       overflow: hidden;
       max-height: calc(100vh - 160px);
+
+      @media (max-width: 768px) {
+        min-width: unset;
+        max-width: unset;
+        max-height: unset;   /* let each column grow to fit all its cards */
+        width: 100%;
+      }
     }
 
     .column__header {
