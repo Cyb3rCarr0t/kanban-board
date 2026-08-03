@@ -35,6 +35,7 @@ export interface ColumnViewModel {
         cdkDropList
         [cdkDropListData]="column.tasks"
         [id]="column.id"
+        [cdkDropListConnectedTo]="connectedTo"
         (cdkDropListDropped)="onDrop($event)"
       >
         @for (task of column.tasks; track task.id) {
@@ -169,13 +170,15 @@ export interface ColumnViewModel {
 export class ColumnComponent {
   @Input({ required: true }) column!: ColumnViewModel;
   @Input() users: User[] = [];
+  @Input() connectedTo: string[] = [];
 
   @Output() taskClicked = new EventEmitter<string>();
   @Output() addTask     = new EventEmitter<TaskStatus>();
-  @Output() taskMoved   = new EventEmitter<{
+  @Output() taskMoved = new EventEmitter<{
     taskId: string;
     fromStatus: TaskStatus;
     toStatus: TaskStatus;
+    previousIndex: number;
     newIndex: number;
   }>();
 
@@ -185,21 +188,24 @@ export class ColumnComponent {
 
   onDrop(event: CdkDragDrop<Task[]>): void {
     const task: Task = event.item.data;
+    const { status } = task;
 
     if (event.previousContainer === event.container) {
       // Reorder within same column — parent will update store
       this.taskMoved.emit({
         taskId: task.id,
-        fromStatus: this.column.id,
-        toStatus: this.column.id,
+        fromStatus: status,
+        toStatus: status,
+        previousIndex: event.previousIndex,
         newIndex: event.currentIndex,
       });
     } else {
       const toStatus = event.container.id as TaskStatus;
       this.taskMoved.emit({
         taskId: task.id,
-        fromStatus: this.column.id,
+        fromStatus: status,
         toStatus,
+        previousIndex: event.previousIndex,
         newIndex: event.currentIndex,
       });
     }
