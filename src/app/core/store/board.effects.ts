@@ -28,4 +28,18 @@ export class BoardEffects {
       )
     )
   );
+
+  moveTask$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(BoardActions.moveTask),
+      switchMap(({ taskId, toStatus }) =>
+        this.taskService.updateTask({ id: taskId, status: toStatus } as any).pipe(
+          map(() => ({ type: '[Effect] Move Task Success' })),
+          catchError(err => of({ type: '[Effect] Move Task Failure', error: err.message ?? 'Unknown error' }))
+        )
+        
+      )
+    ),
+    { dispatch: false }
+  );
 }

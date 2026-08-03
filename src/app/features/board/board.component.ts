@@ -51,6 +51,7 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
           <app-column
             [column]="col"
             [users]="(users$ | async) ?? []"
+            [connectedTo]="allColumnIds"
             (taskClicked)="onTaskClick($event)"
             (taskMoved)="onTaskMoved($event)"
             (addTask)="onAddTask($event)"
@@ -92,6 +93,7 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
 })
 export class BoardComponent implements OnInit {
   private store = inject(Store);
+  readonly allColumnIds = ['todo', 'in-progress', 'review', 'done'];
 
   columns$        = this.store.select(selectFilteredColumns);
   users$          = this.store.select(selectUsers);
@@ -151,8 +153,16 @@ export class BoardComponent implements OnInit {
     this.store.dispatch(BoardActions.openTaskModal({ taskId: null }));
   }
 
-  onTaskMoved(event: { taskId: string; fromStatus: TaskStatus; toStatus: TaskStatus; newIndex: number }): void {
-    // console.log('Task moved:', event);
-    this.store.dispatch(BoardActions.moveTask(event));
+  onTaskMoved(event: { taskId: string; fromStatus: TaskStatus; toStatus: TaskStatus; previousIndex: number; newIndex: number }): void {
+    if (event.fromStatus === event.toStatus) {
+      // same column — need previousIndex too, update the emit shape
+      this.store.dispatch(BoardActions.reorderTask({
+        status: event.fromStatus,
+        previousIndex: event.previousIndex,
+        currentIndex: event.newIndex,
+      }));
+    } else {
+      this.store.dispatch(BoardActions.moveTask(event));
+    }
   }
 }
