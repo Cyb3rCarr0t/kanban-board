@@ -45,6 +45,7 @@ export interface ColumnViewModel {
             [task]="task"
             [user]="getUserById(task.assigneeId)"
             (click)="taskClicked.emit(task.id)"
+            (activate)="taskClicked.emit(task.id)"
           >
             <!-- CDK drag placeholder -->
             <div *cdkDragPlaceholder class="drag-placeholder"></div>

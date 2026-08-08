@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BoardActions } from '../../core/store/board.actions';
 import {
@@ -103,7 +103,10 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
 })
 export class BoardComponent implements OnInit {
   private store = inject(Store);
+  private document = inject(DOCUMENT);
+  private lastFocusedElement: HTMLElement | null = null;
   readonly allColumnIds = ['todo', 'in-progress', 'review', 'done'];
+  
 
   columns$        = this.store.select(selectFilteredColumns);
   users$          = this.store.select(selectUsers);
@@ -138,11 +141,15 @@ export class BoardComponent implements OnInit {
   }
 
   onTaskClick(taskId: string): void {
+    // save what was focused before opening
+    this.lastFocusedElement = this.document.activeElement as HTMLElement;
     this.store.dispatch(BoardActions.openTaskModal({ taskId }));
   }
 
   onCloseModal(): void {
     this.store.dispatch(BoardActions.closeTaskModal());
+    // return focus to where it was
+    setTimeout(() => this.lastFocusedElement?.focus(), 50);
   }
 
   onSaveTask(payload: { id: string | null; dto: CreateTaskDto }): void {

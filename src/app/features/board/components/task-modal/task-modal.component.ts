@@ -1,20 +1,25 @@
 import {
   ChangeDetectionStrategy, Component, EventEmitter,
   Input, OnChanges, Output, signal, computed,
+  HostListener,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Task, User, TaskStatus, TaskPriority, CreateTaskDto } from '../../../../core/models/task.model';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-task-modal',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, A11yModule],
   template: `
     <!-- Backdrop -->
     <div class="modal-backdrop" (click)="close.emit()" role="presentation"></div>
 
-    <div class="modal" role="dialog" aria-modal="true" [attr.aria-label]="isEditing() ? 'Edit task' : 'New task'">
+    <div class="modal" role="dialog" aria-modal="true" [attr.aria-label]="isEditing() ? 'Edit task' : 'New task'"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+      >
       <div class="modal__header">
         <h2 class="modal__title">{{ isEditing() ? 'Edit task' : 'New task' }}</h2>
         <button class="modal__close" (click)="close.emit()" aria-label="Close modal">
@@ -297,6 +302,11 @@ export class TaskModalComponent implements OnChanges {
   @Output() close  = new EventEmitter<void>();
   @Output() save   = new EventEmitter<{ id: string | null; dto: CreateTaskDto }>();
   @Output() delete = new EventEmitter<string>();
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.close.emit();
+  }
 
   // ── Signals ─────────────────────────────────────────────────────────────
   form = signal<CreateTaskDto>({
