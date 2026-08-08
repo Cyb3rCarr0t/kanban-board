@@ -292,6 +292,7 @@ import { Task, User, TaskStatus, TaskPriority, CreateTaskDto } from '../../../..
 export class TaskModalComponent implements OnChanges {
   @Input() task: Task | null = null;
   @Input() users: User[] = [];
+  @Input() defaultStatus: TaskStatus = 'todo';
 
   @Output() close  = new EventEmitter<void>();
   @Output() save   = new EventEmitter<{ id: string | null; dto: CreateTaskDto }>();
@@ -326,7 +327,7 @@ export class TaskModalComponent implements OnChanges {
     } else {
       // Reset form for new task
       this.form.set({
-        title: '', description: '', status: 'todo',
+        title: '', description: '', status: this.defaultStatus,
         priority: 'medium', assigneeId: null, tags: [], dueDate: null,
       });
     }

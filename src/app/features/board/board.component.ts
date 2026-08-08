@@ -6,6 +6,7 @@ import {
   selectSelectedTask, selectHasActiveFilter,
   selectActiveCount, selectInProgressCount, selectDoneCount,
   selectTasksArray,
+  selectModalDefaultStatus,
 } from '../../core/store/board.selectors';
 import { BoardHeaderComponent } from './components/board-header/board-header.component';
 import { ColumnComponent } from './components/column/column.component';
@@ -63,6 +64,7 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
         <app-task-modal
           [task]="(selectedTask$ | async) ?? null"
           [users]="(users$ | async) ?? []"
+          [defaultStatus]="(modalDefaultStatus$ | async) ?? 'todo'"
           (close)="onCloseModal()"
           (save)="onSaveTask($event)"
           (delete)="onDeleteTask($event)"
@@ -88,6 +90,14 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
       overflow-y: hidden;
       flex: 1;
       align-items: flex-start;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: var(--space-3);
+        align-items: stretch;
+      }
     }
   `],
 })
@@ -104,6 +114,7 @@ export class BoardComponent implements OnInit {
   activeCount$    = this.store.select(selectActiveCount);
   inProgressCount$= this.store.select(selectInProgressCount);
   doneCount$      = this.store.select(selectDoneCount);
+  modalDefaultStatus$ = this.store.select(selectModalDefaultStatus);
 
   ngOnInit(): void {
     // Trigger the load effect — in Phase 1 this returns mock data
@@ -150,7 +161,7 @@ export class BoardComponent implements OnInit {
 
   onAddTask(status: TaskStatus): void {
     // Opens modal in "create" mode, pre-selecting the column's status
-    this.store.dispatch(BoardActions.openTaskModal({ taskId: null }));
+    this.store.dispatch(BoardActions.openTaskModal({ taskId: null, defaultStatus: status }));
   }
 
   onTaskMoved(event: { taskId: string; fromStatus: TaskStatus; toStatus: TaskStatus; previousIndex: number; newIndex: number }): void {

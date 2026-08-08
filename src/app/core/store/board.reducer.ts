@@ -13,6 +13,7 @@ export const initialBoardState: BoardState = {
   tasks: tasksToRecord(MOCK_TASKS),
   columns: INITIAL_COLUMNS,
   users: MOCK_USERS,
+  modalDefaultStatus: 'todo',
   selectedTaskId: null,
   isModalOpen: false,
   filterPriority: null,
@@ -126,7 +127,7 @@ export const boardReducer = createReducer(
   }),
 
   // Modal
-  on(BoardActions.openTaskModal,  (state, { taskId }) => ({ ...state, selectedTaskId: taskId, isModalOpen: true })),
+  on(BoardActions.openTaskModal,  (state, { taskId, defaultStatus }) => ({ ...state, selectedTaskId: taskId, isModalOpen: true, modalDefaultStatus: defaultStatus ?? 'todo' })),
   on(BoardActions.closeTaskModal, (state)              => ({ ...state, selectedTaskId: null,  isModalOpen: false })),
 
   // Filters
