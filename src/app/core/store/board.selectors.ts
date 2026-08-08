@@ -15,6 +15,7 @@ export const selectIsModalOpen   = createSelector(selectBoardState, s => s.isMod
 export const selectSearchQuery   = createSelector(selectBoardState, s => s.searchQuery);
 export const selectPriorityFilter= createSelector(selectBoardState, s => s.filterPriority);
 export const selectAssigneeFilter= createSelector(selectBoardState, s => s.filterAssigneeId);
+export const selectModalDefaultStatus = createSelector(selectBoardState, s => s.modalDefaultStatus);
 
 // ── Derived selectors ──────────────────────────────────────────────────────
 

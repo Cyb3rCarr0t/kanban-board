@@ -31,7 +31,7 @@ export const BoardActions = createActionGroup({
     }>(),
 
     // Modal
-    'Open Task Modal':  props<{ taskId: string | null }>(),
+    'Open Task Modal':  props<{ taskId: string | null; defaultStatus?: TaskStatus }>(),
     'Close Task Modal': emptyProps(),
 
     // Filters

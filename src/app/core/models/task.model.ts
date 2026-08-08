@@ -37,6 +37,7 @@ export interface BoardState {
   tasks: Record<string, Task>;
   columns: Column[];
   users: User[];
+  modalDefaultStatus: TaskStatus;
   selectedTaskId: string | null;
   isModalOpen: boolean;
   filterPriority: TaskPriority | null;
