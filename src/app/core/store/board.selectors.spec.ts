@@ -1,3 +1,5 @@
+/// <reference types="jasmine" />
+
 import {
   selectFilteredColumns, selectDoneCount,
   selectInProgressCount, selectHasActiveFilter,
