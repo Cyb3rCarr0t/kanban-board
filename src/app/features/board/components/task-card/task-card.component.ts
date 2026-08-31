@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { Task, User } from '../../../../core/models/task.model';
 
@@ -164,6 +164,15 @@ import { Task, User } from '../../../../core/models/task.model';
 export class TaskCardComponent {
   @Input({ required: true }) task!: Task;
   @Input() user: User | undefined;
+
+  @Output() activate = new EventEmitter<void>();
+
+  @HostListener('keydown.enter', ['$event'])
+  @HostListener('keydown.space', ['$event'])
+  onKeyActivate(event?: Event): void {
+    event?.preventDefault(); // stops space from scrolling the page
+    this.activate.emit();
+  }
 
   get priorityColor(): string {
     const map: Record<string, string> = {

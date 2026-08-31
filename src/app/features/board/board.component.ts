@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BoardActions } from '../../core/store/board.actions';
 import {
@@ -15,6 +15,8 @@ import { StatsBarComponent } from '../dashboard/components/stats-bar/stats-bar.c
 import { AsyncPipe } from '@angular/common';
 import { TaskStatus, TaskPriority, CreateTaskDto } from '../../core/models/task.model';
 import { CdkDropListGroup } from '@angular/cdk/drag-drop';
+import { ToastComponent } from './components/toast/toast';
+import { ToastService } from '../../core/services/toast-service';
 
 @Component({
   selector: 'app-board',
@@ -27,6 +29,7 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
     StatsBarComponent,
     ColumnComponent,
     TaskModalComponent,
+    ToastComponent,
   ],
   template: `
     <div class="board-shell">
@@ -71,6 +74,8 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
         />
       }
 
+      <app-toast />
+
     </div>
   `,
   styles: [`
@@ -103,7 +108,11 @@ import { CdkDropListGroup } from '@angular/cdk/drag-drop';
 })
 export class BoardComponent implements OnInit {
   private store = inject(Store);
+  private document = inject(DOCUMENT);
+  private lastFocusedElement: HTMLElement | null = null;
+  private toastService = inject(ToastService);
   readonly allColumnIds = ['todo', 'in-progress', 'review', 'done'];
+  
 
   columns$        = this.store.select(selectFilteredColumns);
   users$          = this.store.select(selectUsers);
@@ -138,18 +147,24 @@ export class BoardComponent implements OnInit {
   }
 
   onTaskClick(taskId: string): void {
+    // save what was focused before opening
+    this.lastFocusedElement = this.document.activeElement as HTMLElement;
     this.store.dispatch(BoardActions.openTaskModal({ taskId }));
   }
 
   onCloseModal(): void {
     this.store.dispatch(BoardActions.closeTaskModal());
+    // return focus to where it was
+    setTimeout(() => this.lastFocusedElement?.focus(), 50);
   }
 
   onSaveTask(payload: { id: string | null; dto: CreateTaskDto }): void {
     if (payload.id) {
       this.store.dispatch(BoardActions.updateTask({ id: payload.id, changes: payload.dto }));
+      this.toastService.success('Task updated');
     } else {
       this.store.dispatch(BoardActions.addTask({ dto: payload.dto }));
+      this.toastService.success('Task created');
     }
     this.store.dispatch(BoardActions.closeTaskModal());
   }
@@ -157,6 +172,7 @@ export class BoardComponent implements OnInit {
   onDeleteTask(id: string): void {
     this.store.dispatch(BoardActions.deleteTask({ id }));
     this.store.dispatch(BoardActions.closeTaskModal());
+    this.toastService.error('Task deleted');
   }
 
   onAddTask(status: TaskStatus): void {
@@ -174,6 +190,7 @@ export class BoardComponent implements OnInit {
       }));
     } else {
       this.store.dispatch(BoardActions.moveTask(event));
+      this.toastService.info('Task moved');
     }
   }
 }
